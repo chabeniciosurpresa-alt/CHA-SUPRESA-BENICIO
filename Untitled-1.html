@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#718761">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Chá surpresa do Benício 🤫 · 25 de outubro às 16h · Rua Manoel Felisberto da Silva, 505 – Gramame">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta property="og:title" content="Chá surpresa do Benício 💚🤫">
+    <meta property="og:description" content="25 de outubro às 16h · Rua Manoel Felisberto da Silva, 505 – Gramame">
+    <meta property="og:image" content="https://i.ibb.co/RMmYrtC/5f151807-8bb1-4fa7-ad22-f2705f50c066.jpg">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%9A%3C/text%3E%3C/svg%3E">
+
+    <title>Chá surpresa do Benício 💚</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --verde: #718761;
+            --verde-escuro: #526748;
+            --verde-claro: #e9f0e5;
+            --creme: #f5e8dc;
+            --creme-2: #fffaf5;
+            --marrom: #806451;
+            --marrom-escuro: #604b3d;
+            --borda: #e4d6c8;
+            --branco: #ffffff;
+            --verde-forte: #33452b;
+            --texto-forte: #3a2c21;
+            --vermelho: #b3564a;
+            --vermelho-escuro: #954a3f;
+        }
+
+        html { scroll-behavior: smooth; }
+        html, body { width: 100%; overflow-x: hidden; }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+            color: var(--marrom-escuro);
+            min-height: 100vh;
+            min-height: 100dvh;
+            background-color: var(--creme);
+            position: relative;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .fundo-imagem {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(255, 250, 245, 0.62), rgba(245, 232, 220, 0.62)),
+                url("https://i.ibb.co/RMmYrtC/5f151807-8bb1-4fa7-ad22-f2705f50c066.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        button, input, select, textarea { font-family: inherit; }
+        button { cursor: pointer; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 3px solid var(--verde);
+            outline-offset: 2px;
+        }
+
+        .pagina { width: 100%; max-width: 850px; margin: 0 auto; padding: 18px 12px 50px; }
+
+        .convite {
+            background: rgba(255, 255, 255, 0.16);
+            padding: 7px; border-radius: 24px;
+            box-shadow: 0 15px 50px rgba(80, 60, 40, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            overflow: hidden;
+        }
+
+        .convite-info {
+            background: rgba(255, 250, 245, 0.22);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 18px;
+            padding: clamp(24px, 6vw, 40px) clamp(16px, 5vw, 30px);
+            text-align: center;
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .convite-info { background: rgba(255, 250, 245, 0.75); }
+        }
+        .selo-surpresa {
+            display: inline-block; margin-bottom: 10px; padding: 7px 16px;
+            background: var(--verde); color: white; border-radius: 999px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+            font-size: clamp(11px, 3vw, 13px); box-shadow: 0 4px 14px rgba(82, 103, 72, 0.3);
+        }
+        .cha-do {
+            font-family: "Playfair Display", serif; font-style: italic; font-weight: 600;
+            color: var(--texto-forte); font-size: clamp(20px, 5.5vw, 28px); margin-bottom: -6px;
+            text-shadow: 0 1px 12px rgba(255, 255, 255, 0.6);
+        }
+        .nome-bebe {
+            font-family: "Playfair Display", serif; font-weight: 700; text-transform: uppercase;
+            color: var(--verde-forte); font-size: clamp(38px, 12vw, 62px); line-height: 1;
+            letter-spacing: 0.5px; margin-top: 2px; margin-bottom: clamp(20px, 5vw, 30px); word-break: break-word;
+            text-shadow: 0 1px 16px rgba(255, 255, 255, 0.7);
+        }
+        .convite-detalhes { margin-bottom: clamp(20px, 5vw, 26px); }
+        .convite-detalhes .data-hora {
+            font-family: "Playfair Display", serif; font-style: italic; font-weight: 600;
+            color: var(--verde-forte); font-size: clamp(17px, 4.6vw, 21px); margin-bottom: 6px;
+            text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6);
+        }
+        .convite-detalhes .endereco {
+            font-family: "Playfair Display", serif; font-style: italic;
+            color: var(--texto-forte); font-size: clamp(14px, 3.8vw, 17px); line-height: 1.4;
+            text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6);
+        }
+        .presente-sugestao { margin-bottom: clamp(16px, 4vw, 22px); color: var(--texto-forte); text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+        .presente-titulo {
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+            font-size: clamp(13px, 3.6vw, 15px); margin-bottom: 3px;
+        }
+        .presente-item { font-size: clamp(13px, 3.6vw, 15px); }
+        .presenca-texto {
+            font-weight: 700; text-transform: uppercase; color: var(--texto-forte);
+            font-size: clamp(13px, 3.6vw, 15px);
+            text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6);
+        }
+
+        .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 18px 8px 8px; }
+        .acoes .botao-recusar { grid-column: 1 / -1; }
+
+        .botao { border: none; min-height: 58px; border-radius: 16px; font-size: clamp(14px, 4vw, 16px); font-weight: 700; transition: all 0.25s ease; padding: 8px 10px; -webkit-user-select: none; user-select: none; }
+        .botao:hover { transform: translateY(-2px); }
+        .botao:active { transform: scale(0.97); }
+        .botao-principal { background: var(--verde); color: white; box-shadow: 0 8px 20px rgba(82, 103, 72, 0.25); }
+        .botao-principal:hover { background: var(--verde-escuro); }
+        .botao-secundario { background: #eee4d8; color: var(--verde-escuro); }
+        .botao-secundario:hover { background: #e4d6c8; }
+        .botao-recusar { background: #f4e4e0; color: var(--vermelho-escuro); }
+        .botao-recusar:hover { background: #efd6d0; }
+
+        .contador {
+            margin-top: 25px;
+            background: rgba(255, 250, 245, 0.22);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 24px; padding: 25px 15px; text-align: center;
+            box-shadow: 0 10px 35px rgba(80, 60, 40, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .contador { background: rgba(255, 250, 245, 0.8); }
+        }
+        .contador-titulo {
+            font-family: "Playfair Display", serif; color: var(--verde-forte);
+            font-size: clamp(19px, 5vw, 26px); margin-bottom: 18px;
+            text-shadow: 0 1px 12px rgba(255, 255, 255, 0.65);
+        }
+        .contador-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 500px; margin: auto; }
+        .tempo { background: var(--verde); color: white; border-radius: 14px; padding: 13px 5px; min-width: 0; }
+        .tempo strong { display: block; font-size: clamp(16px, 6vw, 27px); line-height: 1; }
+        .tempo span { display: block; font-size: clamp(8px, 2.4vw, 11px); margin-top: 6px; text-transform: uppercase; opacity: 0.9; white-space: nowrap; }
+
+        .lista-section {
+            display: none; margin-top: 25px;
+            background: rgba(255, 250, 245, 0.22);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 24px; padding: 30px 20px;
+            box-shadow: 0 10px 35px rgba(80, 60, 40, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .lista-section { background: rgba(255, 250, 245, 0.85); }
+        }
+        .lista-section.aberta { display: block; animation: aparecer 0.4s ease; }
+
+        .cabecalho { text-align: center; margin-bottom: 25px; }
+        .cabecalho h2 { font-family: "Playfair Display", serif; color: var(--verde-forte); font-size: clamp(21px, 5.5vw, 29px); margin-top: 5px; text-shadow: 0 1px 12px rgba(255, 255, 255, 0.65); }
+        .cabecalho p { color: var(--texto-forte); margin-top: 8px; line-height: 1.5; text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+
+        .categorias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 620px; margin: 0 auto; }
+        .categoria-card {
+            position: relative; border: none; padding: 0; overflow: hidden; border-radius: 18px;
+            background: #f8eee5; cursor: pointer; box-shadow: 0 5px 18px rgba(80, 60, 40, 0.10);
+            transition: 0.25s; aspect-ratio: 4 / 3; -webkit-user-select: none; user-select: none;
+        }
+        .categoria-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(80, 60, 40, 0.16); }
+        .categoria-card:active { transform: scale(0.97); }
+        .categoria-card img { width: 100%; height: 100%; display: block; object-fit: cover; }
+        .categoria-card::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(45, 34, 27, 0.72), rgba(45, 34, 27, 0.02) 60%);
+        }
+        .categoria-nome {
+            position: absolute; z-index: 2; left: 12px; right: 12px; bottom: 13px;
+            color: white; font-size: clamp(12px, 3.4vw, 17px); font-weight: 700; text-align: center;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.35); line-height: 1.25;
+        }
+
+        .lista-itens { display: none; }
+        .lista-itens.aberta { display: block; animation: aparecer 0.3s ease; }
+        .voltar-categorias {
+            border: none; background: #eee4d8; color: var(--verde-escuro); font-weight: 700;
+            border-radius: 12px; padding: 13px 15px; margin-bottom: 16px; cursor: pointer;
+            min-height: 46px; -webkit-user-select: none; user-select: none;
+        }
+        .voltar-categorias:active { transform: scale(0.97); }
+        .categoria-titulo {
+            font-family: "Playfair Display", serif; color: var(--verde-forte);
+            font-size: clamp(19px, 5vw, 24px); margin-bottom: 15px;
+            text-shadow: 0 1px 12px rgba(255, 255, 255, 0.65);
+        }
+        .opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .opcao {
+            display: flex; align-items: center; gap: 12px; padding: 16px;
+            background: #f8eee5; border: 2px solid transparent; border-radius: 15px;
+            cursor: pointer; transition: 0.2s; min-height: 54px;
+        }
+        .opcao:hover { border-color: var(--verde); transform: translateY(-2px); }
+        .opcao:active { transform: scale(0.98); }
+        .opcao.selecionada { background: var(--verde-claro); border-color: var(--verde); }
+        .opcao input { width: 20px; height: 20px; accent-color: var(--verde); flex-shrink: 0; }
+        .opcao strong { color: var(--marrom-escuro); word-break: break-word; }
+
+        .confirmacao-section { display: none; margin-top: 25px; }
+        .confirmacao-section.aberta { display: block; animation: aparecer 0.4s ease; }
+        .confirmacao-card {
+            position: relative;
+            background: rgba(255, 250, 245, 0.22);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 24px; padding: 35px 25px;
+            box-shadow: 0 15px 45px rgba(80, 60, 40, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .confirmacao-card { background: rgba(255, 250, 245, 0.85); }
+        }
+
+        .fechar { position: absolute; top: 15px; right: 15px; width: 40px; height: 40px; border: none; border-radius: 50%; background: #eee3d8; color: var(--marrom); font-size: 26px; line-height: 1; display: flex; align-items: center; justify-content: center; }
+
+        .icone-bebe { text-align: center; font-size: 45px; }
+        .confirmacao-card h2 { text-align: center; font-family: "Playfair Display", serif; color: var(--verde-forte); font-size: clamp(22px, 6vw, 30px); margin-top: 8px; text-shadow: 0 1px 12px rgba(255, 255, 255, 0.65); }
+        .descricao { text-align: center; color: var(--texto-forte); line-height: 1.5; margin: 10px auto 25px; max-width: 500px; text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+
+        .campo { margin-top: 17px; }
+        .campo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: var(--texto-forte); text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%; border: 2px solid var(--borda); background: #fffdfb; border-radius: 13px;
+            padding: 15px; outline: none; font-size: 16px; color: var(--marrom-escuro); transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--verde); }
+        textarea { min-height: 90px; resize: vertical; }
+
+        .presenca { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .presenca input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+        .presenca label { margin: 0; }
+        .presenca span { display: block; text-align: center; padding: 15px 8px; border: 2px solid var(--borda); border-radius: 13px; background: white; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .presenca input:checked + span { background: var(--verde-claro); border-color: var(--verde); color: var(--verde-escuro); }
+        .presenca input:focus-visible + span { outline: 3px solid var(--verde); outline-offset: 2px; }
+
+        .botao-confirmar {
+            width: 100%; border: none; margin-top: 25px; padding: 17px; border-radius: 15px;
+            background: var(--verde); color: white; font-size: 16px; font-weight: 700;
+            box-shadow: 0 8px 20px rgba(82, 103, 72, 0.25); transition: 0.2s;
+        }
+        .botao-confirmar:hover { background: var(--verde-escuro); transform: translateY(-2px); }
+        .botao-confirmar:active { transform: scale(0.98); }
+
+        .adicionar-mimo { width: 100%; min-height: 50px; margin-top: 15px; }
+        .presentes-escolhidos-box { margin-top: 18px; }
+        .presentes-escolhidos {
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 12px;
+            background: #f8eee5; border: 1px solid var(--borda); border-radius: 13px;
+        }
+        .presente-tag {
+            background: var(--verde-claro); color: var(--verde-escuro);
+            border: 1px solid #cbd9c3; border-radius: 10px;
+            padding: 8px 11px; font-size: 13px; font-weight: 600;
+        }
+
+        .sucesso { display: none; margin-top: 25px; }
+        .sucesso.aberto { display: block; animation: aparecer 0.4s ease; }
+        .sucesso-card {
+            text-align: center;
+            background: rgba(255, 250, 245, 0.22);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 24px; padding: 40px 25px;
+            box-shadow: 0 15px 45px rgba(80, 60, 40, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+            .sucesso-card { background: rgba(255, 250, 245, 0.85); }
+        }
+
+        .check { width: 72px; height: 72px; margin: auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--verde); color: white; font-size: 40px; font-weight: bold; }
+        .sucesso-card h2 { font-family: "Playfair Display", serif; color: var(--verde-forte); font-size: clamp(22px, 6vw, 30px); margin-top: 18px; text-shadow: 0 1px 12px rgba(255, 255, 255, 0.65); }
+        .sucesso-card p { color: var(--texto-forte); line-height: 1.6; margin: 10px auto 18px; max-width: 500px; text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+        .sucesso-card span { font-weight: 700; color: var(--verde-forte); text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+
+        .whatsapp { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; padding: 14px 22px; border-radius: 14px; background: #25D366; color: white; text-decoration: none; font-weight: 700; }
+
+        .erro-aviso { display: none; margin-top: 14px; padding: 12px 15px; border-radius: 12px; background: #fdeceb; color: #a13c34; font-size: 14px; text-align: center; }
+        .erro-aviso.mostrar { display: block; }
+
+        footer { text-align: center; color: var(--texto-forte); font-size: 13px; padding: 15px 20px 30px; text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
+
+        @keyframes aparecer { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        @media (max-width: 600px) {
+            .pagina { padding: 8px 7px 35px; }
+            .convite { border-radius: 18px; padding: 5px; }
+            .acoes { grid-template-columns: 1fr; padding: 15px 5px 5px; }
+            .acoes .botao-recusar { grid-column: auto; }
+            .contador { padding: 22px 10px; }
+            .contador-grid { gap: 6px; }
+            .tempo { padding: 11px 3px; }
+            .categorias { grid-template-columns: 1fr 1fr; gap: 10px; max-width: 500px; }
+            .categoria-nome { bottom: 10px; }
+            .opcoes { grid-template-columns: 1fr; }
+            .presenca { grid-template-columns: 1fr; }
+            .confirmacao-card { padding: 30px 17px; }
+        }
+
+        @media (max-width: 380px) {
+            .pagina { padding: 6px 6px 30px; }
+            .contador-grid { gap: 5px; }
+            .tempo { padding: 9px 2px; border-radius: 11px; }
+            .categorias { gap: 8px; }
+            .confirmacao-card { padding: 24px 12px; }
+            .sucesso-card { padding: 30px 16px; }
+            .opcao { padding: 13px; gap: 10px; }
+        }
+
+        @media (max-height: 480px) and (orientation: landscape) {
+            .confirmacao-card, .sucesso-card { padding: 20px 16px; }
+            .icone-bebe, .check { font-size: 34px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="fundo-imagem" aria-hidden="true"></div>
+
+    <main class="pagina">
+
+        <section class="convite">
+            <div class="convite-info">
+                <span class="selo-surpresa">🤫 É surpresa!</span>
+                <p class="cha-do">chá do</p>
+                <h1 class="nome-bebe">Benício</h1>
+
+                <div class="convite-detalhes">
+                    <p class="data-hora">25 de outubro · às 16 horas</p>
+                    <p class="endereco">Rua Manoel Felisberto da Silva, 505 – Gramame</p>
+                </div>
+
+                <div class="presente-sugestao">
+                    <p class="presente-titulo">Sugestão de presente:</p>
+                    <p class="presente-item">Fralda tamanho M/G + 01 mimo</p>
+                </div>
+
+                <p class="presenca-texto">Contamos com a sua presença!</p>
+            </div>
+            <div class="acoes">
+                <button type="button" id="btnConfirmarPresenca" class="botao botao-principal" aria-expanded="false" aria-controls="confirmacaoSection" onclick="abrirConfirmacao('Sim')">Confirmar presença</button>
+                <button type="button" id="btnIdeiasPresentes" class="botao botao-secundario" aria-expanded="false" aria-controls="listaSection" onclick="abrirLista()">Ideias de presentes</button>
+                <button type="button" id="btnNaoVouPoder" class="botao botao-recusar" aria-expanded="false" aria-controls="confirmacaoSection" onclick="abrirConfirmacao('Não')">Não vou poder ir</button>
+            </div>
+        </section>
+
+        <section class="contador">
+            <h2 class="contador-titulo">💚 Contagem regressiva 💚</h2>
+            <div class="contador-grid">
+                <div class="tempo"><strong id="dias">00</strong><span>dias</span></div>
+                <div class="tempo"><strong id="horas">00</strong><span>horas</span></div>
+                <div class="tempo"><strong id="minutos">00</strong><span>minutos</span></div>
+                <div class="tempo"><strong id="segundos">00</strong><span>segundos</span></div>
+            </div>
+        </section>
+
+        <section id="listaSection" class="lista-section">
+            <div class="cabecalho">
+                <h2>Ideias de presentes</h2>
+                <p>Escolha uma categoria para ver as sugestões de presentes.</p>
+            </div>
+
+            <div id="categorias" class="categorias">
+                <button class="categoria-card" type="button" onclick="abrirCategoria('fraldas')">
+                    <img src="https://i.ibb.co/hJ2cF0S4/5d77369f-cc87-4e5a-8d74-b2f444213863.jpg" alt="Fraldas e higiene">
+                    <span class="categoria-nome">Fraldas e higiene</span>
+                </button>
+
+                <button class="categoria-card" type="button" onclick="abrirCategoria('roupinhas')">
+                    <img src="https://i.ibb.co/ksKSJjXN/6d7d4e79-7a18-4782-a390-c265cec2b938.jpg" alt="Roupinhas">
+                    <span class="categoria-nome">Roupinhas</span>
+                </button>
+
+                <button class="categoria-card" type="button" onclick="abrirCategoria('banho')">
+                    <img src="https://i.ibb.co/RppFRj3g/4ad91969-6722-4bd7-861b-7b6761e09fb5.jpg" alt="Banho e cuidados">
+                    <span class="categoria-nome">Banho e cuidados</span>
+                </button>
+
+                <button class="categoria-card" type="button" onclick="abrirCategoria('sono')">
+                    <img src="https://i.ibb.co/QF8BVH4J/b944df0a-a00f-4290-b778-2b0cfd517ec8.jpg" alt="Sono e quarto">
+                    <span class="categoria-nome">Sono e quarto</span>
+                </button>
+
+                <button class="categoria-card" type="button" onclick="abrirCategoria('passeios')">
+                    <img src="https://i.ibb.co/pvFq12sk/57c292da-1e11-4fe2-96d6-6c87607f3fe5.jpg" alt="Passeios e outros">
+                    <span class="categoria-nome">Passeios e outros</span>
+                </button>
+            </div>
+
+            <div id="listaFraldas" class="lista-itens">
+                <button class="voltar-categorias" type="button" onclick="voltarCategorias()">Voltar às categorias</button>
+                <h3 class="categoria-titulo">Fraldas e higiene</h3>
+                <div class="opcoes">
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Fraldas descartáveis tamanho M"><div><strong>Fraldas descartáveis tamanho M</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Fraldas descartáveis tamanho G"><div><strong>Fraldas descartáveis tamanho G</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Fraldas de pano"><div><strong>Fraldas de pano</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Lenços umedecidos"><div><strong>Lenços umedecidos</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Algodão"><div><strong>Algodão</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Hastes flexíveis para bebê"><div><strong>Hastes flexíveis para bebê</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Sabonete líquido infantil"><div><strong>Sabonete líquido infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Sabonete em barra infantil"><div><strong>Sabonete em barra infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Shampoo infantil"><div><strong>Shampoo infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Condicionador infantil"><div><strong>Condicionador infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Creme para assaduras"><div><strong>Creme para assaduras</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Óleo para bebê"><div><strong>Óleo para bebê</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Hidratante infantil"><div><strong>Hidratante infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Colônia infantil"><div><strong>Colônia infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Toalha de banho com capuz"><div><strong>Toalha de banho com capuz</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Trocador portátil"><div><strong>Trocador portátil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Kit de higiene para bebê"><div><strong>Kit de higiene para bebê</strong></div></label>
+                </div>
+            </div>
+
+            <div id="listaRoupinhas" class="lista-itens">
+                <button class="voltar-categorias" type="button" onclick="voltarCategorias()">Voltar às categorias</button>
+                <h3 class="categoria-titulo">Roupinhas</h3>
+                <div class="opcoes">
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga curta RN"><div><strong>Body manga curta RN</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga curta P"><div><strong>Body manga curta P</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga curta M"><div><strong>Body manga curta M</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga curta G"><div><strong>Body manga curta G</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga longa RN"><div><strong>Body manga longa RN</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga longa P"><div><strong>Body manga longa P</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga longa M"><div><strong>Body manga longa M</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Body manga longa G"><div><strong>Body manga longa G</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Macacão RN"><div><strong>Macacão RN</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Macacão P"><div><strong>Macacão P</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Macacão M"><div><strong>Macacão M</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Macacão G"><div><strong>Macacão G</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Calças de bebê"><div><strong>Calças de bebê</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Meias"><div><strong>Meias</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Luvas para recém-nascido"><div><strong>Luvas para recém-nascido</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Toucas"><div><strong>Toucas</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Sapatinhos"><div><strong>Sapatinhos</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Casaquinho"><div><strong>Casaquinho</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Babadores"><div><strong>Babadores</strong></div></label>
+                </div>
+            </div>
+
+            <div id="listaBanho" class="lista-itens">
+                <button class="voltar-categorias" type="button" onclick="voltarCategorias()">Voltar às categorias</button>
+                <h3 class="categoria-titulo">Banho e cuidados</h3>
+                <div class="opcoes">
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Toalha fralda"><div><strong>Toalha fralda</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Escova para cabelo"><div><strong>Escova para cabelo</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Pente infantil"><div><strong>Pente infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Cortador de unhas"><div><strong>Cortador de unhas</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Tesourinha de unha infantil"><div><strong>Tesourinha de unha infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Aspirador nasal"><div><strong>Aspirador nasal</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Termômetro digital"><div><strong>Termômetro digital</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Kit de primeiros cuidados"><div><strong>Kit de primeiros cuidados</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Escova para mamadeira"><div><strong>Escova para mamadeira</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Organizador de produtos de higiene"><div><strong>Organizador de produtos de higiene</strong></div></label>
+                </div>
+            </div>
+
+            <div id="listaSono" class="lista-itens">
+                <button class="voltar-categorias" type="button" onclick="voltarCategorias()">Voltar às categorias</button>
+                <h3 class="categoria-titulo">Sono e quarto</h3>
+                <div class="opcoes">
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Jogo de lençol para berço"><div><strong>Jogo de lençol para berço</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Lençol com elástico"><div><strong>Lençol com elástico</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Fronha infantil"><div><strong>Fronha infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Manta"><div><strong>Manta</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Cobertor infantil"><div><strong>Cobertor infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Cueiro"><div><strong>Cueiro</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Swaddle"><div><strong>Swaddle</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Naninha"><div><strong>Naninha</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Protetor de colchão"><div><strong>Protetor de colchão</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Móbile para berço"><div><strong>Móbile para berço</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Luz noturna"><div><strong>Luz noturna</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Organizador de berço"><div><strong>Organizador de berço</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Cesto organizador"><div><strong>Cesto organizador</strong></div></label>
+                </div>
+            </div>
+
+            <div id="listaPasseios" class="lista-itens">
+                <button class="voltar-categorias" type="button" onclick="voltarCategorias()">Voltar às categorias</button>
+                <h3 class="categoria-titulo">Passeios e outros</h3>
+                <div class="opcoes">
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Bolsa maternidade"><div><strong>Bolsa maternidade</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Trocador de bolsa"><div><strong>Trocador de bolsa</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Porta-fraldas"><div><strong>Porta-fraldas</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Sling"><div><strong>Sling</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Tapete de atividades"><div><strong>Tapete de atividades</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Chocalho"><div><strong>Chocalho</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Mordedor"><div><strong>Mordedor</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Brinquedo de banho"><div><strong>Brinquedo de banho</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Livro infantil"><div><strong>Livro infantil</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Álbum do bebê"><div><strong>Álbum do bebê</strong></div></label>
+                    <label class="opcao"><input type="checkbox" name="listaItem" value="Kit personalizado com nome do bebê"><div><strong>Kit personalizado com nome do bebê</strong></div></label>
+                </div>
+            </div>
+        </section>
+
+        <section id="confirmacaoSection" class="confirmacao-section">
+            <div class="confirmacao-card">
+                <button class="fechar" type="button" onclick="fecharConfirmacao()" aria-label="Fechar">×</button>
+                <div class="icone-bebe">👶🏻</div>
+                <h2>Confirme sua presença</h2>
+                <p class="descricao">Será muito especial ter você conosco nesse momento!</p>
+
+                <form id="formConfirmacao" novalidate>
+                    <div class="campo">
+                        <label for="nome">Seu nome</label>
+                        <input type="text" id="nome" placeholder="Digite seu nome" autocomplete="name" maxlength="60" required>
+                    </div>
+
+                    <div class="campo">
+                        <label>Você irá ao chá?</label>
+                        <div class="presenca">
+                            <label>
+                                <input type="radio" name="presenca" id="presencaSim" value="Sim" required>
+                                <span>🍼 Sim, eu vou!</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="presenca" id="presencaNao" value="Não">
+                                <span>💔 Não poderei ir</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="presentesEscolhidosBox" class="campo presentes-escolhidos-box" style="display:none;">
+                        <label>Presentes escolhidos</label>
+                        <div id="presentesEscolhidos" class="presentes-escolhidos"></div>
+                    </div>
+
+                    <button type="button" id="adicionarMimoBtn" class="botao botao-secundario adicionar-mimo" onclick="adicionarMaisUmMimo()" style="display:none;">
+                        Adicionar mais um mimo
+                    </button>
+
+                    <div class="campo">
+                        <label for="observacao">Observação</label>
+                        <textarea id="observacao" placeholder="Alguma observação? (opcional)" maxlength="300"></textarea>
+                    </div>
+
+                    <button type="submit" class="botao-confirmar">Confirmar presença 💚</button>
+
+                    <div id="erroAviso" class="erro-aviso" role="alert"></div>
+                </form>
+            </div>
+        </section>
+
+        <section id="sucesso" class="sucesso">
+            <div class="sucesso-card">
+                <div class="check">✓</div>
+                <h2>Presença confirmada!</h2>
+                <p id="mensagemSucesso"></p>
+                <span>Chá do Benício</span>
+                <a id="whatsappBtn" class="whatsapp" href="#" target="_blank" rel="noopener" style="display:none;">💬 Enviar confirmação</a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer></footer>
+
+    <script>
+        // Substituí aqui com os valores que você passou
+        const SUPABASE_URL = "https://zkzdnarzlzcqfcanyjjy.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_D4e4ecFMcg6fsK4Kzu9vAQ_N81Sjl26";
+        const NUMERO_WHATSAPP = "";
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const dataDoCha = new Date("2026-10-25T16:00:00");
+
+        function atualizarContador() {
+            const agora = new Date();
+            const diferenca = dataDoCha.getTime() - agora.getTime();
+
+            if (diferenca <= 0) {
+                document.getElementById("dias").textContent = "00";
+                document.getElementById("horas").textContent = "00";
+                document.getElementById("minutos").textContent = "00";
+                document.getElementById("segundos").textContent = "00";
+                return;
+            }
+
+            const dias = Math.floor(diferenca / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferenca % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferenca % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferenca % (1000 * 60)) / 1000);
+
+            document.getElementById("dias").textContent = String(dias).padStart(2, "0");
+            document.getElementById("horas").textContent = String(horas).padStart(2, "0");
+            document.getElementById("minutos").textContent = String(minutos).padStart(2, "0");
+            document.getElementById("segundos").textContent = String(segundos).padStart(2, "0");
+        }
+
+        atualizarContador();
+        setInterval(atualizarContador, 1000);
+
+        const listaSection = document.getElementById("listaSection");
+        const confirmacaoSection = document.getElementById("confirmacaoSection");
+        const sucesso = document.getElementById("sucesso");
+        const form = document.getElementById("formConfirmacao");
+        const erroAviso = document.getElementById("erroAviso");
+        const btnConfirmarPresenca = document.getElementById("btnConfirmarPresenca");
+        const btnIdeiasPresentes = document.getElementById("btnIdeiasPresentes");
+        const btnNaoVouPoder = document.getElementById("btnNaoVouPoder");
+
+        let presentesSelecionados = [];
+
+        function mostrarErro(mensagem) {
+            erroAviso.textContent = mensagem;
+            erroAviso.classList.add("mostrar");
+            erroAviso.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        function ocultarErro() {
+            erroAviso.classList.remove("mostrar");
+            erroAviso.textContent = "";
+        }
+
+        function abrirLista() {
+            const estaAberta = listaSection.classList.contains("aberta");
+
+            if (estaAberta) {
+                listaSection.classList.remove("aberta");
+                btnIdeiasPresentes.setAttribute("aria-expanded", "false");
+                return;
+            }
+
+            listaSection.classList.add("aberta");
+            btnIdeiasPresentes.setAttribute("aria-expanded", "true");
+            listaSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function abrirConfirmacao(presencaPreSelecionada) {
+            confirmacaoSection.classList.add("aberta");
+            btnConfirmarPresenca.setAttribute("aria-expanded", "true");
+            btnNaoVouPoder.setAttribute("aria-expanded", "true");
+
+            if (presencaPreSelecionada === "Sim") {
+                document.getElementById("presencaSim").checked = true;
+            } else if (presencaPreSelecionada === "Não") {
+                document.getElementById("presencaNao").checked = true;
+            }
+
+            confirmacaoSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function fecharConfirmacao() {
+            confirmacaoSection.classList.remove("aberta");
+            btnConfirmarPresenca.setAttribute("aria-expanded", "false");
+            btnNaoVouPoder.setAttribute("aria-expanded", "false");
+        }
+
+        function abrirCategoria(categoria) {
+            document.getElementById("categorias").style.display = "none";
+            document.querySelectorAll(".lista-itens").forEach(function (lista) {
+                lista.classList.remove("aberta");
+            });
+
+            const lista = document.getElementById("lista" + categoria.charAt(0).toUpperCase() + categoria.slice(1));
+            if (lista) {
+                lista.classList.add("aberta");
+                lista.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+
+        function voltarCategorias() {
+            document.querySelectorAll(".lista-itens").forEach(function (lista) {
+                lista.classList.remove("aberta");
+            });
+            document.getElementById("categorias").style.display = "grid";
+        }
+
+        const opcoes = document.querySelectorAll('.opcao input[type="checkbox"]');
+        opcoes.forEach(function (opcao) {
+            opcao.addEventListener("change", function () {
+                const linha = this.closest(".opcao");
+
+                if (this.checked) {
+                    if (!presentesSelecionados.includes(this.value)) {
+                        presentesSelecionados.push(this.value);
+                    }
+                    if (linha) linha.classList.add("selecionada");
+                } else {
+                    presentesSelecionados = presentesSelecionados.filter(item => item !== this.value);
+                    if (linha) linha.classList.remove("selecionada");
+                }
+
+                atualizarPresentesEscolhidos();
+                abrirConfirmacao("Sim");
+            });
+        });
+
+        function atualizarPresentesEscolhidos() {
+            const box = document.getElementById("presentesEscolhidosBox");
+            const lista = document.getElementById("presentesEscolhidos");
+            const botaoAdicionar = document.getElementById("adicionarMimoBtn");
+            const quantidade = presentesSelecionados.length;
+
+            lista.innerHTML = "";
+            presentesSelecionados.forEach(function (presente) {
+                const tag = document.createElement("span");
+                tag.className = "presente-tag";
+                tag.textContent = presente;
+                lista.appendChild(tag);
+            });
+
+            box.style.display = quantidade ? "block" : "none";
+            botaoAdicionar.style.display = quantidade ? "block" : "none";
+        }
+
+        function adicionarMaisUmMimo() {
+            confirmacaoSection.classList.remove("aberta");
+            btnConfirmarPresenca.setAttribute("aria-expanded", "false");
+            listaSection.classList.add("aberta");
+            btnIdeiasPresentes.setAttribute("aria-expanded", "true");
+            voltarCategorias();
+            listaSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            ocultarErro();
+
+            const nome = document.getElementById("nome").value.trim();
+            const presenca = document.querySelector('input[name="presenca"]:checked');
+            const observacao = document.getElementById("observacao").value.trim();
+
+            if (!nome) {
+                mostrarErro("Digite seu nome para confirmar.");
+                return;
+            }
+
+            if (!presenca) {
+                mostrarErro("Informe se você irá ao chá.");
+                return;
+            }
+
+            const vaiComparecer = presenca.value === "Sim";
+
+            const submitBtn = form.querySelector(".botao-confirmar");
+            const textoOriginalBtn = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Enviando...";
+
+            try {
+                const { error } = await supabaseClient
+                    .from("confirmacoes")
+                    .insert([
+                        {
+                            nome: nome,
+                            presenca: vaiComparecer,
+                            presente: presentesSelecionados.length ? presentesSelecionados.join(", ") : null,
+                            observacao: observacao || null
+                        }
+                    ]);
+
+                if (error) throw error;
+
+            } catch (err) {
+                console.error("Erro ao salvar no Supabase:", err);
+                mostrarErro("Não foi possível salvar sua confirmação agora. Verifique sua internet e tente novamente.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = textoOriginalBtn;
+                return;
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = textoOriginalBtn;
+
+            let mensagem = "";
+
+            if (vaiComparecer) {
+                mensagem = `Que alegria, ${nome}! 💚 Sua presença está confirmada para o Chá do Benício.`; 
+
+                if (presentesSelecionados.length) {
+                    mensagem += ` Levarei: ${presentesSelecionados.join(", ")}.`;
+                }
+
+                if (observacao) {
+                    mensagem += ` Observação: ${observacao}`;
+                }
+            } else {
+                mensagem = `Tudo bem, ${nome}. 💚 Sentiremos sua falta no Chá do Benício. Obrigado por avisar!`;
+            }
+
+            document.getElementById("mensagemSucesso").textContent = mensagem;
+
+            confirmacaoSection.classList.remove("aberta");
+            listaSection.classList.remove("aberta");
+            btnConfirmarPresenca.setAttribute("aria-expanded", "false");
+            btnIdeiasPresentes.setAttribute("aria-expanded", "false");
+            btnNaoVouPoder.setAttribute("aria-expanded", "false");
+
+            sucesso.classList.add("aberto");
+            sucesso.scrollIntoView({ behavior: "smooth", block: "start" });
+
+            form.reset();
+            document.querySelectorAll(".opcao.selecionada").forEach(function (linha) {
+                linha.classList.remove("selecionada");
+            });
+            presentesSelecionados = [];
+            atualizarPresentesEscolhidos();
+
+            if (NUMERO_WHATSAPP) {
+                const linkWhatsApp = "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensagem);
+                const whatsappBtn = document.getElementById("whatsappBtn");
+                whatsappBtn.href = linkWhatsApp;
+                whatsappBtn.style.display = "inline-flex";
+            }
+        });
+    </script>
+
+</body>
+</html>
