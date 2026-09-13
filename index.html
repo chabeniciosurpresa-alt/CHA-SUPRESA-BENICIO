@@ -669,21 +669,22 @@
         const musica = document.getElementById("musicaFundo");
         const botaoMusica = document.getElementById("botaoMusica");
         let musicaIniciada = false;
+        let usuarioDesligouMusica = false;
 
         function atualizarBotaoMusica() {
-            if (!botaoMusica) return;
             const onda = botaoMusica.querySelector(".onda");
             if (!musica.paused) {
                 botaoMusica.classList.add("tocando");
-                if (onda) onda.textContent = "🔊";
+                onda.textContent = "🔊";
             } else {
                 botaoMusica.classList.remove("tocando");
-                if (onda) onda.textContent = "🔈";
+                onda.textContent = "🔈";
             }
         }
 
         function tocarMusica() {
-            if (!musica || !musica.paused) return;
+            // Se a pessoa desligou manualmente, NENHUMA outra interação liga de novo.
+            if (usuarioDesligouMusica || !musica.paused) return;
 
             const tentativa = musica.play();
             if (tentativa && typeof tentativa.then === "function") {
@@ -691,34 +692,30 @@
                     musicaIniciada = true;
                     atualizarBotaoMusica();
                 }).catch(function () {
-                    // O navegador pode bloquear autoplay. A próxima interação tenta novamente.
+                    // O navegador bloqueou o autoplay. Tentaremos novamente na próxima interação,
+                    // desde que a pessoa ainda não tenha desligado manualmente.
                 });
-            } else {
-                musicaIniciada = true;
-                atualizarBotaoMusica();
             }
         }
 
-        // Tentamos iniciar na primeira interação do usuário.
-        // Scroll/wheel é incluído para tentar começar assim que a pessoa rolar.
-        const eventosDeInicio = [
-            "pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"
-        ];
+        // O navegador pode bloquear autoplay ao abrir o link.
+        // Assim que houver uma interação real (toque, clique, rolagem etc.), tentamos iniciar.
+        const eventosDeInicio = ["pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"];
 
-        function iniciarNaPrimeiraInteracao() {
-            if (!musicaIniciada && musica.paused) {
+        function iniciarNaInteracao() {
+            if (!usuarioDesligouMusica && !musicaIniciada && musica.paused) {
                 tocarMusica();
             }
         }
 
         eventosDeInicio.forEach(function (nomeEvento) {
-            window.addEventListener(nomeEvento, iniciarNaPrimeiraInteracao, {
+            window.addEventListener(nomeEvento, iniciarNaInteracao, {
                 capture: true,
                 passive: true
             });
         });
 
-        // Qualquer botão/link/controle clicado também tenta iniciar a música.
+        // Qualquer botão/link pode iniciar a música, mas SOMENTE enquanto o usuário não a desligou.
         document.addEventListener("click", function (evento) {
             const elemento = evento.target.closest("button, a, label");
             if (elemento && elemento.id !== "botaoMusica") {
@@ -726,19 +723,21 @@
             }
         }, true);
 
-        // Botão flutuante: liga/desliga a música manualmente.
-        if (botaoMusica) {
-            botaoMusica.addEventListener("click", function (evento) {
-                evento.stopPropagation();
-                if (musica.paused) {
-                    tocarMusica();
-                } else {
-                    musica.pause();
-                    musicaIniciada = false;
-                    atualizarBotaoMusica();
-                }
-            });
-        }
+        // Botão da música: aqui o usuário controla de verdade.
+        // Se desligar, a música fica desligada até apertar este botão novamente.
+        botaoMusica.addEventListener("click", function (evento) {
+            evento.stopPropagation();
+
+            if (musica.paused) {
+                usuarioDesligouMusica = false;
+                tocarMusica();
+            } else {
+                musica.pause();
+                musicaIniciada = false;
+                usuarioDesligouMusica = true;
+                atualizarBotaoMusica();
+            }
+        });
 
         musica.addEventListener("play", atualizarBotaoMusica);
         musica.addEventListener("pause", atualizarBotaoMusica);
