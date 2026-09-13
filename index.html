@@ -684,20 +684,21 @@
             });
         }
 
+        const eventosDeInicio = ["pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"];
+
         function iniciarNaPrimeiraInteracao() {
             if (!musicaIniciada) {
                 tocarMusica();
             }
-            document.removeEventListener("click", iniciarNaPrimeiraInteracao);
-            document.removeEventListener("touchstart", iniciarNaPrimeiraInteracao);
-            document.removeEventListener("keydown", iniciarNaPrimeiraInteracao);
-            document.removeEventListener("scroll", iniciarNaPrimeiraInteracao);
+            eventosDeInicio.forEach(function (nomeEvento) {
+                window.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
+                document.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
+            });
         }
 
-        document.addEventListener("click", iniciarNaPrimeiraInteracao, { passive: true });
-        document.addEventListener("touchstart", iniciarNaPrimeiraInteracao, { passive: true });
-        document.addEventListener("keydown", iniciarNaPrimeiraInteracao);
-        document.addEventListener("scroll", iniciarNaPrimeiraInteracao, { passive: true, once: true });
+        eventosDeInicio.forEach(function (nomeEvento) {
+            window.addEventListener(nomeEvento, iniciarNaPrimeiraInteracao, { capture: true, passive: true });
+        });
 
         // Botão flutuante: liga/desliga a música manualmente
         botaoMusica.addEventListener("click", function (evento) {
