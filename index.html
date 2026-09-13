@@ -666,52 +666,82 @@
         setInterval(atualizarContador, 1000);
 
         // ---- Música de fundo ----
-        // Navegadores não permitem áudio tocar sozinho sem uma ação do usuário.
-        // Por isso a música começa no primeiro toque/clique/tecla/rolagem que a
-        // pessoa fizer em qualquer lugar da página — o que, na prática, costuma
-        // acontecer assim que o convite é aberto no celular.
         const musica = document.getElementById("musicaFundo");
         const botaoMusica = document.getElementById("botaoMusica");
         let musicaIniciada = false;
 
-        function tocarMusica() {
-            musica.play().then(function () {
-                musicaIniciada = true;
+        function atualizarBotaoMusica() {
+            if (!botaoMusica) return;
+            const onda = botaoMusica.querySelector(".onda");
+            if (!musica.paused) {
                 botaoMusica.classList.add("tocando");
-                botaoMusica.querySelector(".onda").textContent = "🔊";
-            }).catch(function () {
-                // navegador ainda bloqueou; tentará de novo na próxima interação
-            });
+                if (onda) onda.textContent = "🔊";
+            } else {
+                botaoMusica.classList.remove("tocando");
+                if (onda) onda.textContent = "🔈";
+            }
         }
 
-        const eventosDeInicio = ["pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"];
+        function tocarMusica() {
+            if (!musica || !musica.paused) return;
+
+            const tentativa = musica.play();
+            if (tentativa && typeof tentativa.then === "function") {
+                tentativa.then(function () {
+                    musicaIniciada = true;
+                    atualizarBotaoMusica();
+                }).catch(function () {
+                    // O navegador pode bloquear autoplay. A próxima interação tenta novamente.
+                });
+            } else {
+                musicaIniciada = true;
+                atualizarBotaoMusica();
+            }
+        }
+
+        // Tentamos iniciar na primeira interação do usuário.
+        // Scroll/wheel é incluído para tentar começar assim que a pessoa rolar.
+        const eventosDeInicio = [
+            "pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"
+        ];
 
         function iniciarNaPrimeiraInteracao() {
-            if (!musicaIniciada) {
+            if (!musicaIniciada && musica.paused) {
                 tocarMusica();
             }
-            eventosDeInicio.forEach(function (nomeEvento) {
-                window.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
-                document.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
-            });
         }
 
         eventosDeInicio.forEach(function (nomeEvento) {
-            window.addEventListener(nomeEvento, iniciarNaPrimeiraInteracao, { capture: true, passive: true });
+            window.addEventListener(nomeEvento, iniciarNaPrimeiraInteracao, {
+                capture: true,
+                passive: true
+            });
         });
 
-        // Botão flutuante: liga/desliga a música manualmente
-        botaoMusica.addEventListener("click", function (evento) {
-            evento.stopPropagation();
-            if (musica.paused) {
+        // Qualquer botão/link/controle clicado também tenta iniciar a música.
+        document.addEventListener("click", function (evento) {
+            const elemento = evento.target.closest("button, a, label");
+            if (elemento && elemento.id !== "botaoMusica") {
                 tocarMusica();
-            } else {
-                musica.pause();
-                musicaIniciada = false;
-                botaoMusica.classList.remove("tocando");
-                botaoMusica.querySelector(".onda").textContent = "🔈";
             }
-        });
+        }, true);
+
+        // Botão flutuante: liga/desliga a música manualmente.
+        if (botaoMusica) {
+            botaoMusica.addEventListener("click", function (evento) {
+                evento.stopPropagation();
+                if (musica.paused) {
+                    tocarMusica();
+                } else {
+                    musica.pause();
+                    musicaIniciada = false;
+                    atualizarBotaoMusica();
+                }
+            });
+        }
+
+        musica.addEventListener("play", atualizarBotaoMusica);
+        musica.addEventListener("pause", atualizarBotaoMusica);
 
         const listaSection = document.getElementById("listaSection");
         const confirmacaoSection = document.getElementById("confirmacaoSection");
