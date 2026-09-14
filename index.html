@@ -327,21 +327,38 @@
 
         .botao-musica {
             position: fixed; top: 14px; right: 14px; z-index: 50;
-            width: 48px; height: 48px; border-radius: 50%; border: none;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
             background: rgba(255, 250, 245, 0.75);
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-            box-shadow: 0 4px 16px rgba(80, 60, 40, 0.22);
+            box-shadow: 0 4px 16px rgba(80, 60, 40, 0.2);
             display: flex; align-items: center; justify-content: center;
-            font-size: 20px; color: var(--verde-forte);
+            font-size: 13px; color: var(--verde-forte);
             transition: transform 0.2s ease;
+            overflow: visible;
         }
         .botao-musica:active { transform: scale(0.92); }
-        .botao-musica .onda { display: inline-block; }
-        .botao-musica.tocando .onda { animation: pulsar 1s ease-in-out infinite; }
+        .botao-musica .onda { display: inline-block; font-size: 13px; line-height: 1; }
+        .botao-musica.tocando .onda { animation: pulsar 1.4s ease-in-out infinite; }
 
         @keyframes pulsar {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.18); }
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.12); opacity: 1; }
+        }
+
+        .botao-musica.pausado::after {
+            content: "💤";
+            position: absolute;
+            top: -2px; right: -4px;
+            font-size: 11px;
+            opacity: 0;
+            pointer-events: none;
+            animation: flutuarSono 2.6s ease-in infinite;
+        }
+
+        @keyframes flutuarSono {
+            0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+            15% { opacity: 0.9; }
+            100% { opacity: 0; transform: translate(6px, -20px) scale(1.05); }
         }
 
         @keyframes aparecer { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -386,9 +403,9 @@
 
     <div class="fundo-imagem" aria-hidden="true"></div>
 
-    <audio id="musicaFundo" src="musica.mp3" loop preload="auto"></audio>
-    <button type="button" id="botaoMusica" class="botao-musica" aria-label="Ativar ou pausar música" title="Música">
-        <span class="onda">🔈</span>
+    <audio id="musicaFundo" preload="auto"></audio>
+    <button type="button" id="botaoMusica" class="botao-musica pausado" aria-label="Ativar ou pausar música" title="Música">
+        <span class="onda">🎵</span>
     </button>
 
     <main class="pagina">
@@ -665,82 +682,97 @@
         atualizarContador();
         setInterval(atualizarContador, 1000);
 
-        // ---- Música de fundo ----
+        // ---- Música de fundo (playlist com 4 músicas) ----
+        // Navegadores não permitem áudio tocar sozinho sem uma ação do usuário.
+        // Por isso a música começa no primeiro toque/clique/tecla/rolagem que a
+        // pessoa fizer em qualquer lugar da página — o que, na prática, costuma
+        // acontecer assim que o convite é aberto no celular.
+        const listaMusicas = ["musica.mp3", "musica2.mp3", "musica3.mp3", "musica4.mp3"];
         const musica = document.getElementById("musicaFundo");
         const botaoMusica = document.getElementById("botaoMusica");
         let musicaIniciada = false;
-        let usuarioDesligouMusica = false;
+        let indiceMusicaAtual = 0;
 
-        function atualizarBotaoMusica() {
-            const onda = botaoMusica.querySelector(".onda");
-            if (!musica.paused) {
-                botaoMusica.classList.add("tocando");
-                onda.textContent = "🔊";
-            } else {
-                botaoMusica.classList.remove("tocando");
-                onda.textContent = "🔈";
+        function salvarUltimaMusica(indice) {
+            try {
+                localStorage.setItem("chaBenicioUltimaMusica", String(indice));
+            } catch (e) {
+                // se o navegador bloquear localStorage, apenas ignora
             }
         }
+
+        function escolherMusicaInicial() {
+            let ultima = null;
+            try {
+                ultima = localStorage.getItem("chaBenicioUltimaMusica");
+            } catch (e) {
+                ultima = null;
+            }
+
+            let opcoes = listaMusicas.map(function (_, i) { return i; });
+
+            if (ultima !== null) {
+                const idxUltima = parseInt(ultima, 10);
+                if (!isNaN(idxUltima) && listaMusicas.length > 1) {
+                    opcoes = opcoes.filter(function (i) { return i !== idxUltima; });
+                }
+            }
+
+            return opcoes[Math.floor(Math.random() * opcoes.length)];
+        }
+
+        indiceMusicaAtual = escolherMusicaInicial();
+        musica.src = listaMusicas[indiceMusicaAtual];
+        salvarUltimaMusica(indiceMusicaAtual);
+
+        // Quando uma música termina, toca a próxima da lista (e volta ao início ao chegar na última)
+        musica.addEventListener("ended", function () {
+            indiceMusicaAtual = (indiceMusicaAtual + 1) % listaMusicas.length;
+            musica.src = listaMusicas[indiceMusicaAtual];
+            salvarUltimaMusica(indiceMusicaAtual);
+            musica.play().catch(function () {});
+        });
 
         function tocarMusica() {
-            // Se a pessoa desligou manualmente, NENHUMA outra interação liga de novo.
-            if (usuarioDesligouMusica || !musica.paused) return;
-
-            const tentativa = musica.play();
-            if (tentativa && typeof tentativa.then === "function") {
-                tentativa.then(function () {
-                    musicaIniciada = true;
-                    atualizarBotaoMusica();
-                }).catch(function () {
-                    // O navegador bloqueou o autoplay. Tentaremos novamente na próxima interação,
-                    // desde que a pessoa ainda não tenha desligado manualmente.
-                });
-            }
+            musica.play().then(function () {
+                musicaIniciada = true;
+                botaoMusica.classList.add("tocando");
+                botaoMusica.classList.remove("pausado");
+                botaoMusica.querySelector(".onda").textContent = "🎵";
+            }).catch(function () {
+                // navegador ainda bloqueou; tentará de novo na próxima interação
+            });
         }
 
-        // O navegador pode bloquear autoplay ao abrir o link.
-        // Assim que houver uma interação real (toque, clique, rolagem etc.), tentamos iniciar.
         const eventosDeInicio = ["pointerdown", "touchstart", "touchend", "click", "keydown", "wheel", "scroll"];
 
-        function iniciarNaInteracao() {
-            if (!usuarioDesligouMusica && !musicaIniciada && musica.paused) {
+        function iniciarNaPrimeiraInteracao() {
+            if (!musicaIniciada) {
                 tocarMusica();
             }
+            eventosDeInicio.forEach(function (nomeEvento) {
+                window.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
+                document.removeEventListener(nomeEvento, iniciarNaPrimeiraInteracao, true);
+            });
         }
 
         eventosDeInicio.forEach(function (nomeEvento) {
-            window.addEventListener(nomeEvento, iniciarNaInteracao, {
-                capture: true,
-                passive: true
-            });
+            window.addEventListener(nomeEvento, iniciarNaPrimeiraInteracao, { capture: true, passive: true });
         });
 
-        // Qualquer botão/link pode iniciar a música, mas SOMENTE enquanto o usuário não a desligou.
-        document.addEventListener("click", function (evento) {
-            const elemento = evento.target.closest("button, a, label");
-            if (elemento && elemento.id !== "botaoMusica") {
-                tocarMusica();
-            }
-        }, true);
-
-        // Botão da música: aqui o usuário controla de verdade.
-        // Se desligar, a música fica desligada até apertar este botão novamente.
+        // Botão flutuante: liga/desliga a música manualmente
         botaoMusica.addEventListener("click", function (evento) {
             evento.stopPropagation();
-
             if (musica.paused) {
-                usuarioDesligouMusica = false;
                 tocarMusica();
             } else {
                 musica.pause();
                 musicaIniciada = false;
-                usuarioDesligouMusica = true;
-                atualizarBotaoMusica();
+                botaoMusica.classList.remove("tocando");
+                botaoMusica.classList.add("pausado");
+                botaoMusica.querySelector(".onda").textContent = "🎵";
             }
         });
-
-        musica.addEventListener("play", atualizarBotaoMusica);
-        musica.addEventListener("pause", atualizarBotaoMusica);
 
         const listaSection = document.getElementById("listaSection");
         const confirmacaoSection = document.getElementById("confirmacaoSection");
@@ -765,6 +797,7 @@
         }
 
         function abrirLista() {
+            tocarMusica();
             const estaAberta = listaSection.classList.contains("aberta");
 
             if (estaAberta) {
@@ -779,6 +812,7 @@
         }
 
         function abrirConfirmacao(presencaPreSelecionada) {
+            tocarMusica();
             confirmacaoSection.classList.add("aberta");
             btnConfirmarPresenca.setAttribute("aria-expanded", "true");
             btnNaoVouPoder.setAttribute("aria-expanded", "true");
