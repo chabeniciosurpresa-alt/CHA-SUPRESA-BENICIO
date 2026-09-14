@@ -325,16 +325,18 @@
 
         footer { text-align: center; color: var(--texto-forte); font-size: 13px; padding: 15px 20px 30px; text-shadow: 0 1px 10px rgba(255, 255, 255, 0.6); }
 
-        .botao-musica {
+        .grupo-musica {
             position: fixed; top: 14px; right: 14px; z-index: 50;
-            width: 40px; height: 40px; border-radius: 50%; border: none;
+            width: 40px; height: 40px;
+        }
+        .botao-musica {
+            position: relative; width: 100%; height: 100%; border-radius: 50%; border: none;
             background: rgba(255, 250, 245, 0.75);
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
             box-shadow: 0 4px 16px rgba(80, 60, 40, 0.2);
             display: flex; align-items: center; justify-content: center;
             font-size: 13px; color: var(--verde-forte);
             transition: transform 0.2s ease;
-            overflow: visible;
         }
         .botao-musica:active { transform: scale(0.92); }
         .botao-musica .onda { display: inline-block; font-size: 13px; line-height: 1; }
@@ -345,20 +347,22 @@
             50% { transform: scale(1.12); opacity: 1; }
         }
 
-        .botao-musica.pausado::after {
-            content: "💤";
+        .sono-flutuante {
             position: absolute;
-            top: -2px; right: -4px;
-            font-size: 11px;
+            top: -6px; right: -8px;
+            font-size: 15px;
             opacity: 0;
             pointer-events: none;
+            z-index: 51;
+        }
+        .grupo-musica.pausado .sono-flutuante {
             animation: flutuarSono 2.6s ease-in infinite;
         }
 
         @keyframes flutuarSono {
             0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
-            15% { opacity: 0.9; }
-            100% { opacity: 0; transform: translate(6px, -20px) scale(1.05); }
+            18% { opacity: 0.95; }
+            100% { opacity: 0; transform: translate(8px, -24px) scale(1.1); }
         }
 
         @keyframes aparecer { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -404,9 +408,12 @@
     <div class="fundo-imagem" aria-hidden="true"></div>
 
     <audio id="musicaFundo" preload="auto"></audio>
-    <button type="button" id="botaoMusica" class="botao-musica pausado" aria-label="Ativar ou pausar música" title="Música">
-        <span class="onda">🎵</span>
-    </button>
+    <div class="grupo-musica pausado" id="grupoMusica">
+        <button type="button" id="botaoMusica" class="botao-musica" aria-label="Ativar ou pausar música" title="Música">
+            <span class="onda">🎵</span>
+        </button>
+        <span class="sono-flutuante" aria-hidden="true">💤</span>
+    </div>
 
     <main class="pagina">
 
@@ -687,15 +694,16 @@
         // Por isso a música começa no primeiro toque/clique/tecla/rolagem que a
         // pessoa fizer em qualquer lugar da página — o que, na prática, costuma
         // acontecer assim que o convite é aberto no celular.
-        const listaMusicas = ["musica.mp3", "musica2.mp3", "musica3.mp3", "musica4.mp3"];
+        const listaMusicas = ["musica2.mp3", "musica3.mp3", "musica4.mp3"];
         const musica = document.getElementById("musicaFundo");
         const botaoMusica = document.getElementById("botaoMusica");
+        const grupoMusica = document.getElementById("grupoMusica");
         let musicaIniciada = false;
         let indiceMusicaAtual = 0;
 
         function salvarUltimaMusica(indice) {
             try {
-                localStorage.setItem("chaBenicioUltimaMusica", String(indice));
+                localStorage.setItem("chaBenicioUltimaMusicaV2", String(indice));
             } catch (e) {
                 // se o navegador bloquear localStorage, apenas ignora
             }
@@ -704,7 +712,7 @@
         function escolherMusicaInicial() {
             let ultima = null;
             try {
-                ultima = localStorage.getItem("chaBenicioUltimaMusica");
+                ultima = localStorage.getItem("chaBenicioUltimaMusicaV2");
             } catch (e) {
                 ultima = null;
             }
@@ -738,6 +746,7 @@
                 musicaIniciada = true;
                 botaoMusica.classList.add("tocando");
                 botaoMusica.classList.remove("pausado");
+                grupoMusica.classList.remove("pausado");
                 botaoMusica.querySelector(".onda").textContent = "🎵";
             }).catch(function () {
                 // navegador ainda bloqueou; tentará de novo na próxima interação
@@ -770,6 +779,7 @@
                 musicaIniciada = false;
                 botaoMusica.classList.remove("tocando");
                 botaoMusica.classList.add("pausado");
+                grupoMusica.classList.add("pausado");
                 botaoMusica.querySelector(".onda").textContent = "🎵";
             }
         });
